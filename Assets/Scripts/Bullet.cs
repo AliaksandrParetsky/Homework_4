@@ -1,32 +1,37 @@
-using System.Collections;
 using UnityEngine;
 
 public abstract class Bullet : MonoBehaviour
 {
-    [HideInInspector] public float time;
+    private float timeDestroy = 2.0f;
 
     private void Start()
     {
-        time = 0.1f;
-        StartCoroutine(DestroyHimself(time));
+        DestroyHimSelf(timeDestroy);
     }
 
-    public virtual void OnCollisionEnter(Collision collision)
+    private void Awake()
     {
-        if(collision.gameObject.TryGetComponent<Obj>(out var obj))
-        {
-            obj.OnHit();
+        SetColorTrail();
+    }
 
-            Debug.Log("OnCollisionEnter");
+    protected virtual void OnCollisionEnter(Collision collision)
+    {
+        if(collision.gameObject.TryGetComponent<Target>(out var obj))
+        {
+            Debug.Log("Base OnCollisionEnter");
         }
     }
 
-    public virtual IEnumerator DestroyHimself(float time)
+    protected void DestroyHimSelf(float timeDestroy)
     {
-        yield return new WaitForSeconds(time);
-
-        Destroy(gameObject);
+        Destroy(gameObject, timeDestroy);
     }
+
+    protected void SetColorTrail()
+    {
+        gameObject.GetComponentInChildren<TrailRenderer>().material.color = gameObject.GetComponent<Renderer>().material.color;
+    }
+
 }
 
 

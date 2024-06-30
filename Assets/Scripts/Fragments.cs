@@ -1,10 +1,10 @@
-using System;
-using System.Collections;
 using UnityEngine;
 
-public class Fragments : Bullet
+public class Fragments : StandartBullet
 {
     private Rigidbody rb;
+
+    private float timeDestroyFragments = 1.0f;
 
     private void Start()
     {
@@ -13,25 +13,12 @@ public class Fragments : Bullet
             rb = GetComponent<Rigidbody>();
             rb.AddForce(GetRandomVector3(), ForceMode.Impulse);
         }
-        
-        time = 1f;
 
-        StartCoroutine(DestroyHimself(time));
-    }
-
-    public override void OnCollisionEnter(Collision collision)
-    {
-        base.OnCollisionEnter(collision);
-    }
-
-    public override IEnumerator DestroyHimself(float time)
-    {
-        return base.DestroyHimself(time);
+        DestroyHimSelf(timeDestroyFragments);
     }
 
     private Vector3 GetRandomVector3()
     {
-        return new Vector3(UnityEngine.Random.Range(-20.0f, 20.0f), UnityEngine.Random.Range(-20.0f, 20.0f),
-            UnityEngine.Random.Range(-20.0f, 20.0f));
+        return new Vector3(Random.Range(-20.0f, 20.0f), Random.Range(-20.0f, 20.0f), Random.Range(-20.0f, 20.0f));
     }
 }

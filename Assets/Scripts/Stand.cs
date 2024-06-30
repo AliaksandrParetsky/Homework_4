@@ -2,36 +2,36 @@ using UnityEngine;
 
 public class Stand : MonoBehaviour
 {
-    [SerializeField] private GameObject bulletPrefab;
-    [SerializeField] Vector3 offset;
+    [SerializeField] private Bullet bulletPrefab;
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.TryGetComponent<Weapon>(out var weapon))
-        {
-            if (weapon != null)
-            {
-                weapon.Offset = offset;
-                weapon.LoadWeapon(bulletPrefab);
-            }
-            else
-            {
-                Debug.Log("Weapon is Null!");
-            }
-            
-            Debug.Log(bulletPrefab.name);
-        }
+        SetBullet(other, true);
     }
 
     private void OnTriggerExit(Collider other)
     {
-        if (other.TryGetComponent<Weapon>(out var weapon))
-        {
-            if (weapon != null)
-            {
-                weapon.LoadWeapon(null);
+        SetBullet(other, false);
+    }
 
-                Debug.Log("Weapon is Null!");
+    private void SetBullet(Collider collider , bool enter)
+    {
+        if (collider.TryGetComponent<CharacterMovement>(out var characterMovement))
+        {
+            GameObject player = characterMovement.gameObject;
+
+            var cam = player.GetComponentInChildren<Weapon>();
+
+            if (cam.TryGetComponent<Weapon>(out var weapon))
+            {
+                if (enter)
+                {
+                    weapon.LoadWeapon(bulletPrefab);
+                }
+                else
+                {
+                    weapon.LoadWeapon(null);
+                }
             }
         }
     }

@@ -1,9 +1,12 @@
-using System.Collections;
 using UnityEngine;
 
-public class TennisBall : StandartBullet
+public class TennisBall : Bullet
 {
     private PhysicMaterial physicMaterial;
+
+    private float timeDestroyTennisBall = 5.0f;
+
+    private ParticleSystem particle;
 
     private void Start()
     {
@@ -18,13 +21,6 @@ public class TennisBall : StandartBullet
             Debug.LogError("PhysicMaterial TennisBall is Null!");
         }
 
-        time = 6f;
-
-        StartCoroutine(DestroyHimself(time));
-    }
-
-    public override IEnumerator DestroyHimself(float time)
-    {
-        return base.DestroyHimself(time);
+        DestroyHimSelf(timeDestroyTennisBall);
     }
 }

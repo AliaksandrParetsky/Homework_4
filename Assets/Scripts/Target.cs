@@ -1,9 +1,7 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody))]
-public class Obj : MonoBehaviour
+public class Target : MonoBehaviour
 {
     private Rigidbody rb;
 
