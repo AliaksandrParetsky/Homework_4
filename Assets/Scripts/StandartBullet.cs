@@ -1,21 +1,33 @@
-using System.Collections;
+
 using UnityEngine;
 
 public class StandartBullet : Bullet
 {
-    private void Start()
+    private ParticleSystem particle;
+
+    private GameObject tinyExpl;
+
+    private void OnEnable()
     {
-        time = 2f;
-        StartCoroutine(DestroyHimself(time));
+        particle = transform.GetChild(2).GetComponent<ParticleSystem>();
+
+        tinyExpl = particle.gameObject;
+
+        tinyExpl.SetActive(false);
+
+        particle.Stop();
     }
 
-    public override IEnumerator DestroyHimself(float time)
+    protected override void OnCollisionEnter(Collision collision)
     {
-        return base.DestroyHimself(time);
-    }
+        if (collision.gameObject.TryGetComponent<Target>(out var obj))
+        {
+            obj.OnHit();
 
-    public override void OnCollisionEnter(Collision collision)
-    {
-        base.OnCollisionEnter(collision);
+            tinyExpl?.SetActive(true);
+            particle?.Play();
+
+            DestroyHimSelf(2.0f);
+        }
     }
 }

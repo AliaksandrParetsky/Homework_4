@@ -20,6 +20,9 @@ public class MouseLook : MonoBehaviour
 
     private float verticalRot = 0;
 
+    private float inputMouseX;
+    private float inputMouseY;
+
     void Start()
     {
         if (GetComponent<Rigidbody>())
@@ -33,21 +36,43 @@ public class MouseLook : MonoBehaviour
         }
     }
 
+    private void OnEnable()
+    {
+        InputContrpller.MouseRotX += HandleMouseX;
+        InputContrpller.MouseRotY += HandleMouseY;
+    }
+
+    private void OnDisable()
+    {
+        InputContrpller.MouseRotX -= HandleMouseX;
+        InputContrpller.MouseRotY -= HandleMouseY;
+    }
+
     void Update()
     {
         if(axes == RotationsAxes.MouseX)
         {
-            transform.rotation = transform.rotation * Quaternion.Euler( 0f, Input.GetAxis("Mouse X") * sensivitiHor
-                * Time.deltaTime, 0f);
+            transform.rotation = transform.rotation * Quaternion.Euler( 0f, inputMouseX * (sensivitiHor
+                * Time.deltaTime), 0f);
         }
         else if(axes == RotationsAxes.MouseY)
         {
-            verticalRot = verticalRot - Input.GetAxis("Mouse Y") * sensivitiVert * Time.deltaTime;
+            verticalRot = verticalRot - inputMouseY * (sensivitiVert * Time.deltaTime);
             verticalRot = Mathf.Clamp(verticalRot, minimumVert, maximumVert);
 
             float horizontalRot = transform.localEulerAngles.y;
 
             transform.localEulerAngles = new Vector3(verticalRot, horizontalRot, 0);
         }
+    }
+
+    private void HandleMouseX(float rotX)
+    {
+        inputMouseX = rotX;
+    }
+
+    private void HandleMouseY(float rotY)
+    {
+        inputMouseY = rotY;
     }
 }

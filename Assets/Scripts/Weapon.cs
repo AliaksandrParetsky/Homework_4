@@ -2,41 +2,46 @@ using UnityEngine;
 
 public class Weapon : MonoBehaviour
 {
-    private GameObject bulletPrefab;
+    private Bullet bulletPrefab;
 
     private float speed;
 
-    public Vector3 Offset { get; set; }
-
-    private void Start()
+    void Start()
     {
-        speed = 50f;
+        speed = 60.0f;
     }
 
-    private void Update()
+    private void OnEnable()
     {
-        if (Input.GetKeyDown(KeyCode.Space))
+        InputContrpller.ShotEvent += Shot;
+    }
+
+    private void OnDisable()
+    {
+        InputContrpller.ShotEvent -= Shot;
+    }
+
+    private void Shot()
+    {
+        if (bulletPrefab != null)
         {
-            if(bulletPrefab != null)
-            {
-                Fire();
-            }
-            else
-            {
-                Debug.Log("Оружие не заряжено!");
-                return;
-            }
+            Fire();
+        }
+        else
+        {
+            Debug.Log("Prefab is Null!");
+            return;
         }
     }
 
-    public void LoadWeapon(GameObject bullet)
+    public void LoadWeapon(Bullet bullet)
     {
         bulletPrefab = bullet;
     }
 
     private void Fire()
     {
-        GameObject newbullet = Instantiate(bulletPrefab, transform.position + Offset, transform.rotation);
+        Bullet newbullet = Instantiate(bulletPrefab, transform.position, transform.rotation);
         newbullet.GetComponent<Rigidbody>().velocity = transform.forward * speed;
     }
 }

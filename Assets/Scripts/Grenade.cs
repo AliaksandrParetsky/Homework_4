@@ -1,48 +1,72 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class Grenade : Bullet
 {
-     [SerializeField] private List<Fragments> standartBullets = new List<Fragments>();
+    [SerializeField] private List<Fragments> fragmentsBullets = new List<Fragments>();
+
+    private ParticleSystem particle;
+
+    private GameObject bigExpl;
+
+    private float timeDestroyCollision = 0.01f;
+    private float timeDestroyGrenade = 3.0f;
+    private float animDelayExplosion = 1.5f;
+
+    private bool firstCollision = true;
 
     private void Start()
     {
-        time = 3f;
-        StartCoroutine(DestroyHimself(time));   
-    }
-    public override void OnCollisionEnter(Collision collision)
-    {
-        if (collision.gameObject.TryGetComponent<Obj>(out var obj))
-        {
-            obj.OnHit();
-
-            Debug.Log("OnCollisionEnter");
-
-            Destroy(gameObject);
-        }
-        else
-        {
-            Debug.Log("Obj is Null!");
-            return;
-        }
+        StartCoroutine(TimeExplosion(timeDestroyGrenade, animDelayExplosion));
     }
 
-    public override IEnumerator DestroyHimself(float time)
+    private void OnEnable()
     {
-        return base.DestroyHimself(time);
+        particle = transform.GetChild(2).GetComponent<ParticleSystem>();
+
+        bigExpl = particle.gameObject;
+
+        bigExpl.SetActive(false);
+
+        particle.Stop();
     }
 
-    private void OnDisable()
+    private IEnumerator TimeExplosion(float firstdelay, float secondDelay)
     {
+        yield return new WaitForSeconds(firstdelay);
+
+        bigExpl?.SetActive(true);
+        particle?.Play();
+
         Explosion();
+
+        yield return new WaitForSeconds(secondDelay);
+
+        DestroyHimSelf(timeDestroyCollision);
+    }
+
+    protected override void OnCollisionEnter(Collision collision)
+    {
+        if (collision.gameObject.TryGetComponent<Target>(out var obj))
+        {
+            if (!firstCollision)
+            {
+                return;
+            }
+
+            StartCoroutine(TimeExplosion(timeDestroyCollision, animDelayExplosion));
+
+            firstCollision = false;
+        }
     }
 
     private void Explosion()
     {
-        for(int i = 0; i < standartBullets.Count; i++)
+        for (int i = 0; i < fragmentsBullets.Count; i++)
         {
-            standartBullets[i] = Instantiate(standartBullets[i], transform.position, transform.rotation);
+            fragmentsBullets[i] = Instantiate(fragmentsBullets?[i], transform.position, transform.rotation);
         }
     }
 }
